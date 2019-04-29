@@ -11,5 +11,24 @@ var connection = mysql.createConnection({
 
 connection.connect(function(err) {
     console.log("Connection as id: " + connection.threadId);
-    
+    start();
 })
+
+var start = function(){
+    inquirer.prompt([
+        {
+            name:"productId",
+            type: "input",
+            message: "Please enter the ID of the item you wish to purchase: "
+        },
+        {
+            name:"howMany",
+            type: "input",
+            message: "How many units do you want to buy? "
+        }
+    ]).then(function(res) {
+        if(res.productId === products.item_id){
+            //checkInventory()
+        }
+    })
+}
