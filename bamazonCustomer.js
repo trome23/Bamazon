@@ -1,5 +1,6 @@
 var mysql = require("mysql");
 var inquirer = require("inquirer");
+var Table = require('easy-table')
 
 var connection = mysql.createConnection({
     host: "localhost",
@@ -10,11 +11,36 @@ var connection = mysql.createConnection({
 });
 
 connection.connect(function(err) {
-    console.log("Connection as id: " + connection.threadId);
-    start();
+    if (err) throw err;
+    // console.log("Connection as id: " + connection.threadId);
 })
 
-var start = function(){
+showTable();
+
+ 
+function showTable() {
+    connection.query("SELECT * FROM products", function(err, results) {
+        if (err) throw err;
+        console.log("\n");
+        console.log(`BAMAZON`);
+        console.log("\n");
+
+        var t = new Table;
+
+        results.forEach(function(product) {
+            t.cell("Item", product.item_id);
+            t.cell("Product", product.product_name);
+            t.cell("Department", product.department_name);
+            t.cell("Price", product.price, Table.number(2));
+            t.cell("Quantity", product.stock_quantity);
+            t.newRow()
+        });   
+        console.log(t.toString());
+        shopping();
+    });
+    
+
+function shopping() {
     inquirer.prompt([
         {
             name:"productId",
@@ -26,15 +52,35 @@ var start = function(){
             type: "input",
             message: "How many units do you want to buy? "
         }
-    ]).then(function(res) {
-        var itemId = res.productId;
-        var quantity = res.howMany;
+    ]).then(function(answers) {
+        connection.query("SELECT * FROM products WHERE item_id = ?" + answers.productId, function(err, res) {
+            console.log(res);
+            
+        //     try{
+        //         let currentPrice = res[0].price;
+        //         var total = (answers.quantity * currentPrice).toFixed(2)
 
-        checkInventory(itemId, quantity);
-        }
-    })
-}
+        //         if(res[0].stock_quantity < answers.quantity) {
+        //             console.log("Insufficient Quantity");
+        //             showTable();                    
+        //         } else {
+        //             connection.query("UPDATE products SET stock_quantity = stock_quantity - " +  answers.quantity + "WHERE item_id = " + answers.item_id, function(err, results) {
+        //                 console.log("Inventory Updated!");
+        //                 console.log("Your new total is= $ " + total);   
+                                        
+        //             });
+        //         }
+        //     }catch(e){
+        //         console.log("There was an error!: ", e.message);
+        //         exit();    
+        // }
 
-var checkInventory = function(productId, howMany) {
+            })
+        })
+    };
+};
+        
 
-}
+    function exit() {
+        connection.end();
+    }
