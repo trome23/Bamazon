@@ -27,8 +27,14 @@ var start = function(){
             message: "How many units do you want to buy? "
         }
     ]).then(function(res) {
-        if(res.productId === products.item_id){
-            //checkInventory()
+        var itemId = res.productId;
+        var quantity = res.howMany;
+
+        checkInventory(itemId, quantity);
         }
     })
+}
+
+var checkInventory = function(productId, howMany) {
+
 }

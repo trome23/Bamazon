@@ -10,3 +10,9 @@ create table products(
 	stock_quantity int
 );
 
+use bamazon_DB; 
+
+INSERT INTO products (item_id, product_name, department_name, price, stock_quantity)
+VALUES (2, "baseball", "Sports", 10, 8)
+ 
+
