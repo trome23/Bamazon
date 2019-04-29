@@ -53,27 +53,29 @@ function shopping() {
             message: "How many units do you want to buy? "
         }
     ]).then(function(answers) {
-        connection.query("SELECT * FROM products WHERE item_id = ?" + answers.productId, function(err, res) {
-            console.log(res);
+        var selection = answers.productId;
+        var amount = answers.howMany;
+        connection.query("SELECT * FROM products WHERE item_id = ?", selection, function(err, res) {
+            console.log(res[0].price);
             
-        //     try{
-        //         let currentPrice = res[0].price;
-        //         var total = (answers.quantity * currentPrice).toFixed(2)
+            try{
+                let currentPrice = res[0].price;
+                var total = (amount * currentPrice).toFixed(2)
 
-        //         if(res[0].stock_quantity < answers.quantity) {
-        //             console.log("Insufficient Quantity");
-        //             showTable();                    
-        //         } else {
-        //             connection.query("UPDATE products SET stock_quantity = stock_quantity - " +  answers.quantity + "WHERE item_id = " + answers.item_id, function(err, results) {
-        //                 console.log("Inventory Updated!");
-        //                 console.log("Your new total is= $ " + total);   
+                if(res[0].stock_quantity < answers.quantity) {
+                    console.log("Insufficient Quantity");
+                    showTable();                    
+                } else {
+                    connection.query("UPDATE products SET stock_quantity = stock_quantity - " +  answers.quantity + "WHERE item_id = " + answers.item_id, function(err, results) {
+                        console.log("Inventory Updated!");
+                        console.log("Your new total is= $ " + total);   
                                         
-        //             });
-        //         }
-        //     }catch(e){
-        //         console.log("There was an error!: ", e.message);
-        //         exit();    
-        // }
+                    });
+                }
+            }catch(e){
+                console.log("There was an error!: ", e.message);
+                exit();    
+        }
 
             })
         })
