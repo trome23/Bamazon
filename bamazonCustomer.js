@@ -59,20 +59,17 @@ function shopping() {
                 var currentPrice = res[0].price;
                 var currentQuantity = res[0].stock_quantity;
                 var total = (amount * currentPrice).toFixed(2);
-                console.log(currentQuantity, amount);
                 ;
                 if(currentQuantity < amount) {
                     console.log("Insufficient Quantity");
                     showTable();                    
                 } else {
-                    console.log(currentQuantity, amount, item);
+                   
                     connection.query("UPDATE products SET stock_quantity =" + (currentQuantity - amount) + " WHERE item_id = " + item, function(err, results) {
-                    console.log(err);
 
-                        console.log("Your new total is= $ " + total); 
-                        console.log(results);
-                        exit()
-                        // return results;             
+                        console.log("Inventory Updated!"); 
+                        console.log("Your new total is= $ " + total);            
+                        exit()         
                     });
                   
                     
