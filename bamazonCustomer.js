@@ -13,10 +13,8 @@ var connection = mysql.createConnection({
 connection.connect(function(err) {
     if (err) throw err;
     // console.log("Connection as id: " + connection.threadId);
+    showTable();
 })
-
-showTable();
-
  
 function showTable() {
     connection.query("SELECT * FROM products", function(err, results) {
@@ -54,30 +52,34 @@ function shopping() {
         }
     ]).then(function(answers) {
         var selection = answers.productId;
-        var amount = answers.howMany;
+        var amount = parseInt(answers.howMany);
         connection.query("SELECT * FROM products WHERE item_id = ?", selection, function(err, res) {
-            console.log(res[0].price);
-            
-            try{
-                let currentPrice = res[0].price;
-                var total = (amount * currentPrice).toFixed(2)
-
-                if(res[0].stock_quantity < answers.quantity) {
+            // console.log(res[0].price);
+                var item = res[0].item_id;
+                var currentPrice = res[0].price;
+                var currentQuantity = res[0].stock_quantity;
+                var total = (amount * currentPrice).toFixed(2);
+                console.log(currentQuantity, amount);
+                ;
+                if(currentQuantity < amount) {
                     console.log("Insufficient Quantity");
                     showTable();                    
                 } else {
-                    connection.query("UPDATE products SET stock_quantity = stock_quantity - " +  answers.quantity + "WHERE item_id = " + answers.item_id, function(err, results) {
-                        console.log("Inventory Updated!");
-                        console.log("Your new total is= $ " + total);   
-                                        
+                    console.log(currentQuantity, amount, item);
+                    connection.query("UPDATE products SET stock_quantity =" + (currentQuantity - amount) + " WHERE item_id = " + item, function(err, results) {
+                    console.log(err);
+
+                        console.log("Your new total is= $ " + total); 
+                        console.log(results);
+                        exit()
+                        // return results;             
                     });
+                  
+                    
                 }
-            }catch(e){
-                console.log("There was an error!: ", e.message);
-                exit();    
-        }
 
             })
+            
         })
     };
 };
